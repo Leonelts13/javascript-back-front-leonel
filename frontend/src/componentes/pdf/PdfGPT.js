@@ -89,15 +89,17 @@ const PdfGPT = () => {
   const handleUpload = async () => {
     setIsLoading(true) // para mostrar el circulo que esta cargando la informacion
     const formData = new FormData() // se usa para mandar datos al servidor o backend
-    formData.append('file', document)
+    formData.append('pdf', document)
     formData.append('question', query)
-    //console.log(data.get('file'))
+
+    console.log("esta bien el formato??-------------Z>>>>", formData)
+    //console.log(data.get('pdf'))
     try {
       const response = await inferenceApi({ data: formData })
       console.log("que saaaaaaaaaaaaaaale aqui: ",response);
       const data = { // creamos un nuevo objeto 'data'
         id: listMessage.length + 1,
-        message: response.text || 'No se pudo obtener una respuesta',
+        message: response.message.text || 'No se pudo obtener una respuesta',
         query
       }
       setListMessage([...listMessage, data]) //actualizamos la lista agregando el mensaje al final del array

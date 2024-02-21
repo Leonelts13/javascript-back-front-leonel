@@ -1,8 +1,26 @@
 //import { OPENAI_API_KEY } from '@env';
 
-export const completionApi = async ({ prompt }) => {
+export const completionApi = async ({prompt }) => {
     if (prompt == '') return //verificamos si el promt esta vacio
+
+    const message = { message: prompt };
+
     try {
+      const response = await fetch('http://192.168.100.8:5000/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(message)
+      });
+      const jsonData = await response.json();
+      console.log('Datos creados:', jsonData);
+      return jsonData
+    } catch (error) {
+      console.error('Error al crear datos:', error);
+    }
+
+    /* try {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -32,5 +50,5 @@ export const completionApi = async ({ prompt }) => {
     } catch (error) {
       console.log(error)
       throw new Error('Error al obtener la respuesta de la API')
-    }
+    } */
   }

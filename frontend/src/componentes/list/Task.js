@@ -1,42 +1,42 @@
-import React from 'react'
-import { Image, StyleSheet, View, Text } from 'react-native'
+import React from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
-export default function Task({ task }) {
+const Task = ({ task }) => {
     return (
-        <View style={styles.item}>
-            <View style={styles.itemLeft}>
-                <Image style={styles.image} source={{ uri: task.urls.raw }} />
-                <Text style={styles.itemText}>{task.alt_description}</Text>
+        <View style={styles.container}>
+            <View style={styles.contenedorImagen}>
+                <Image source={{ uri: task.urls.regular }} style={styles.image} />
             </View>
+            <Text style={styles.descripcion}>{task.alt_description}</Text>
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
-    item: { //la etiqueta o cada fila
-        backgroundColor: "#FFF",
-        //backgroundColor: "red",
-        padding: 15,
+    container: {
+        //backgroundColor: 'pink',
         borderRadius: 10,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 20
+        width: '100%',
+        height: '100%',
+        alignItems: 'center',
+        paddingVertical: 15, // distancia del espacio interno iniciando en la parte superior
     },
-    itemLeft: { // cuadro mas interno de la etiqueta
-        flexDirection: "row",
-        alignItems: "center",
-        flexWrap: "wrap",
-        //backgroundColor: "red",
+    contenedorImagen: {
+        width: '30%',
+        height: '60%',
+        borderRadius: 50,
+        overflow: 'hidden',
+        marginBottom: 15, //espacio par la descripcion
     },
     image: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        marginRight: 15,
+        width: '100%',
+        height: '100%',
+        aspectRatio: 1,
     },
-    itemText: { // texto descripcion de cada etiqueta
-        maxWidth: "80%",
-        //backgroundColor: "red",
-    }
-})
+    descripcion: {
+        fontSize: 16,
+        color: '#333333',
+    },
+});
+
+export default Task;

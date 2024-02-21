@@ -1,118 +1,81 @@
 import React from "react";
-import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Icon from 'react-native-vector-icons/FontAwesome'
+import { View, StyleSheet, Image, Text, Linking, Button } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
 
-const instagram_username = <Icon name='instagram' size={30} color="black" />
-const portfolio_url = <Icon name='globe' size={30} color="black" />
+const instagram = <Icon name={'instagram'} size={35} color={'white'} />;
+const portafolio_url = <Icon name={'globe'} size={35} color={'white'} />;
+const like = <Icon name={'thumbs-up'} size={35} color={'white'} />;
 
-export default function Profile({ task, closeProfile }) {
+const Profile = ({ task, closeProfile }) => {
     return (
-        <View style={styles.item}>
-            <View style={styles.supimage}>
-                <View style={styles.leftSide}>
-                    <Image
-                        style={styles.image}
-                        source={{ uri: task.urls.raw }}
-                    />
-                </View>
-                <View style={styles.rightSide}>
-                    <Text style={{ color: 'blue' }} onPress={() => {
-                        Linking.openURL(task.user.portfolio_url)
-                    }} >
-                        {task.user.name}
+        <View style={styles.container}>
+            <View style={styles.imageContainer}>
+                <Image source={{ uri: task.urls.raw }} style={styles.image} />
+            </View>
+            <View style={styles.textContainer}>
+                <Text style={styles.userName} onPress={() => Linking.openURL(task.user.portfolio_url)}>
+                    {task.user.name}
+                </Text>
+                <View style={styles.socialIcons}>
+                    <Text style={styles.icon} onPress={() => Linking.openURL(task.user.social.instagram_url)}>
+                        {instagram}
                     </Text>
-                    <View style={styles.redes}>
-                        <Text style={{ color: 'blue' }} onPress={() => {
-                            Linking.openURL(task.user.social.instagram_username)
-                        }}>
-                            {instagram_username}
-                        </Text>
-                        <Text style={{ color: 'blue' }} onPress={() => {
-                            Linking.openURL(task.user.portfolio_url)
-                        }}>
-                            {portfolio_url}
-                        </Text>
-                    </View>
+                    <Text style={styles.icon} onPress={() => Linking.openURL(task.user.social.portfolio_url)}>
+                        {portafolio_url}
+                    </Text>
+                    <Text style={styles.icon} onPress={() => Linking.openURL(task.user.social.portfolio_url)}>
+                        {like}
+                    </Text>
                 </View>
             </View>
-            <View style={styles.containerkpi}>
-                <View style={styles.kpiR}>
-                    <Image
-                        style={styles.image2}
-                        source={require('../../../assets/like.png')}
-                    />
-                </View>
-            </View>
-            <View>
-                <TouchableOpacity onPress={closeProfile}>
-                    <Text>Cerrar</Text>
-                </TouchableOpacity>
-            </View>
+            
+            <Button title={'Cerrar'} color={'#17c1ad'}  onPress={closeProfile} />
         </View>
-    )
+    );
 }
 
-
 const styles = StyleSheet.create({
-    item: { //cuadro interno de la ventana flotante
-        height: "100%",
-        width: "100%",
-        backgroundColor: "white",
-        //backgroundColor: "red",
-        borderRadius: 20,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
+    container: {
+        flex: 1,
+        backgroundColor: 'black',
+        padding: 20,
     },
-    supimage: { // imagen de la ventana flotante
-        height: "100%",
-        width: "100%",
-        flexBasis: "70%",
-        display: "flex",
-        flexDirection: "row"
-    },
-    leftSide: { //cuadro para la imagen de la ventana flotante
-        flexBasis: "50%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        //backgroundColor: "red",
+    imageContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#2c3e50',
+        borderRadius: 100,
+        marginBottom: 20,
     },
     image: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
+        width: 200,
+        height: 200,
+        borderRadius: 100,
     },
-    rightSide: { //cuadro con la informacion de la ventana flotante
-        flexBasis: "50%",
-        display: "flex",
-        alignItems: "center",
-        flexDirection: "column",
-        justifyContent: "space-evenly",
-        //backgroundColor: "red",
+    textContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingBottom: 30,
     },
-    redes: { // linea donde estan las redes sociales de cuadro flotante
-        width: "100%",
-        display: "flex",
-        justifyContent: "space-around",
-        alignItems: "center",
-        flexDirection: "row",
-        //backgroundColor: "red",
+    userName: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#3498db',
+        marginTop: 10,
     },
-    containerkpi: { // cuadro donde esta el like de la ventaba flotante
-        width: 100, 
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-around",
-        //backgroundColor: "red",
+    socialIcons: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        width: '100%',
+        marginTop: 20,
+        //padding: 5,
     },
-    kpiR: { // cuadro donde esta el like de la ventaba flotante
-        width: 20,
-        //backgroundColor: "red",
+    icon: {
+        color: '#3498db',
+        
     },
-    image2: { // cuadro donde esta el like de la ventaba flot
-        width: 20,
-        height: 20,
-        //backgroundColor: "yellow",
-    }
-})
+});
+
+export default Profile;

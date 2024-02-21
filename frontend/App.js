@@ -1,27 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
-import { Appearance, StyleSheet, Text, View } from 'react-native';
-import Navigation from './src/Navigation';
+import { StyleSheet, View, useColorScheme } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
-import * as NavigationBar from 'expo-navigation-bar';
-
+import Navigation from './src/Navigation.js';
 
 export default function App() {
-  const [statusBarColor, setStatusBarColor] = useState('dark');
-  const currentColorScheme = Appearance.getColorScheme();
-
-  useEffect(() => {
-    const changeStatusBarColor = async () => {
-      NavigationBar.setBackgroundColorAsync('#FFFFFF');
-      NavigationBar.setButtonStyleAsync("dark");
-    }
-    changeStatusBarColor();
-  }, []);
+  //const colorScheme = useColorScheme();
 
   return (
-    <NavigationContainer style={styles.container}>
-      <StatusBar style={statusBarColor} />
-      <Navigation />
+    <NavigationContainer>
+      <StatusBar
+        style='light'
+        backgroundColor='black'
+      />
+      <View style={styles.container}>
+        <Navigation />
+      </View>
     </NavigationContainer>
   );
 }
@@ -29,8 +22,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'red',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: StatusBar.currentHeight || 0,
   },
 });

@@ -1,95 +1,70 @@
-import React, { useEffect, useState } from 'react'
-import { FlatList, StatusBar } from 'react-native'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import Icon from 'react-native-vector-icons/FontAwesome'
+import React, { useEffect, useState } from 'react';
+import { FlatList, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View, Animated, ImageBackground } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-const pencilIcon = <Icon name='pencil' size={20} color="blue" />
-const trashIcon = <Icon name='trash' size={20} color="red" />
+const pencilIcon = <Icon name='pencil' size={20} color="blue" />;
+const trashIcon = <Icon name='trash' size={20} color="red" />;
 
-const initialData = [] //definimos una lista vacia
-
-const initialFullName = { nombre: '', apellido: '', edad: '' } // creamos un objeto persona
+const initialFullName = { nombre: '', apellido: '', edad: '' };
 
 export default function Form() {
+  const [fullName, setFullName] = useState(initialFullName);
+  const [listNames, setListNames] = useState([]);
+  const [fadeAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
-    fetchData()
-  }, [])
-  //console.log(jsonData)
+    fetchData();
+    fadeIn();
+  }, []);
 
-  const [fullName, setFullName] = useState(initialFullName) // para almacenar el nombre y apellido
-  const [listNames, setListNames] = useState(initialData) //para almacena la lista de personas
-
-  //cargamos los datos de la base de datos del backend
   const fetchData = async () => {
-    setListNames(initialData)
     try {
-      const response = await fetch('http://192.168.100.8:4000/tasks')
-      const jsonData = await response.json()
-      //setTaskItems(jsonData)
-      setListNames(jsonData)
+      const response = await fetch('http://192.168.100.8:4000/tasks');
+      const jsonData = await response.json();
+      setListNames(jsonData);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
-  const onSubmit = async () => {
-    const { nombre, apellido, edad } = fullName //extraemos nombre y apellido de 'fullName
+  const handleSubmit = async () => {
+    const { nombre, apellido, edad, id } = fullName;
     const intEdad = parseInt(edad, 10);
-    const persona = { nombre: nombre, apellido: apellido, edad: intEdad };
+    const persona = { nombre, apellido, edad: intEdad };
 
-    if (fullName.id) { // verificamos si esta editando
-      try {
-        //hacemos un PUT al api rest del backend
-        const response = await fetch(`http://192.168.100.8:4000/tasks/${fullName.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(persona)
-        });
-        const jsonData = await response.json();
-        console.log('Datos modificados:', jsonData);
-      } catch (error) {
-        console.error('Error al modificar los datos:', error);
-      }
-    } else { // caso contrario ingresamos un usuario
+    try {
+      const url = id ? `http://192.168.100.8:4000/tasks/${id}` : 'http://192.168.100.8:4000/tasks';
+      const method = id ? 'PUT' : 'POST';
 
-      //hacemos un POST al api rest del backend
-      try {
-        const response = await fetch('http://192.168.100.8:4000/tasks', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(persona)
-        });
-        const jsonData = await response.json();
-        console.log('Datos creados:', jsonData);
-      } catch (error) {
-        console.error('Error al crear datos:', error);
-      }
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(persona)
+      });
 
+      const jsonData = await response.json();
+      console.log(id ? 'Datos modificados:' : 'Datos creados:', jsonData);
+    } catch (error) {
+      console.error(id ? 'Error al modificar los datos:' : 'Error al crear datos:', error);
     }
-    fetchData() // actualizamos la información
-    setFullName(initialFullName)
-  }
+
+    fetchData();
+    setFullName(initialFullName);
+  };
 
   const handleChange = (name, value) => {
-    setFullName((prevFullName) => ({
-      ...prevFullName,
-      [name]: value
-    }))
-  }
+    setFullName(prevFullName => ({ ...prevFullName, [name]: value }));
+  };
 
   const handleDelete = async (idPersona) => {
-     //hacemos un DELETE al api rest del backend
     try {
       const response = await fetch(`http://192.168.100.8:4000/tasks/${idPersona}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'
-        },
+        }
       });
       const jsonData = await response.json();
       console.log('Datos eliminados:', jsonData);
@@ -97,151 +72,179 @@ export default function Form() {
       console.error('Error al eliminar datos:', error);
     }
 
-    fetchData() // actualizamos la información
-    setFullName(initialFullName)
-  }
+    fetchData();
+    setFullName(initialFullName);
+  };
 
   const handleEdit = async (idPersona) => {
     try {
       const response = await fetch(`http://192.168.100.8:4000/tasks/${idPersona}`);
-      const data = await response.json();
-      //const foundItem = listNames.find((item) => item.id === id);
-      const {nombre, apellido, edad } = data;
-      const edadString = edad.toString();
-      const persona = { id: idPersona, nombre: nombre, apellido: apellido, edad: edadString };
-      setFullName(persona)
-      console.log('Datos encontrados:', data);
+      const { nombre, apellido, edad } = await response.json();
+      const persona = { id: idPersona, nombre, apellido, edad: edad.toString() };
+      setFullName(persona);
+      console.log('Datos encontrados:', persona);
     } catch (error) {
       console.error('Error al encontrar el dato:', error);
     }
-  }
+  };
+
+  const fadeIn = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  };
 
   const Card = ({ data }) => {
-    const { id, nombre, apellido, edad } = data
+    const { id, nombre, apellido, edad } = data;
     return (
-      <View style={styles.containerItem}>
+      <Animated.View style={[styles.containerItem, { opacity: fadeAnim }]}>
         <View style={styles.itemFullName}>
-          <Text key={id} > {nombre}  {apellido}  {edad}</Text>
+          <Text style={[styles.letraTamaño]}>{nombre} {apellido} {edad}</Text>
         </View>
         <View style={styles.itemActions}>
-          <Text onPress={() => handleEdit(id)} >{pencilIcon}</Text>
-          <Text onPress={() => handleDelete(id)}>{trashIcon}</Text>
+          <TouchableOpacity onPress={() => handleEdit(id)}>
+            <Text style={styles.icon}>{pencilIcon}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleDelete(id)}>
+            <Text style={styles.icon}>{trashIcon}</Text>
+          </TouchableOpacity>
         </View>
-      </View>
-    )
-  }
+      </Animated.View>
+    );
+  };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.formContainer}>
-        <Text style={styles.title}>
-          Completa los campos
-        </Text>
-        <TextInput
-          style={styles.inputText}
-          placeholder='Ingresa tu nombre'
-          value={fullName.nombre}
-          onChangeText={value => handleChange('nombre', value)}
-        />
-        <TextInput
-          style={styles.inputText}
-          placeholder='Ingresa tu apellido'
-          value={fullName.apellido}
-          onChangeText={value => handleChange('apellido', value)}
-        />
-        <TextInput
-          style={styles.inputText}
-          placeholder='Ingresa tu edad'
-          value={fullName.edad}
-          keyboardType='numeric'
-          onChangeText={value => handleChange('edad', value)}
+    <ImageBackground source={require('../../assets/fondo.jpg')} style={styles.backgroundImage}>
+      <View style={styles.container}>
+        <View style={styles.formContainer}>
+          <Text style={styles.title}>Completa los campos</Text>
+          <TextInput
+            style={styles.inputText}
+            placeholder='Nombre'
+            value={fullName.nombre}
+            onChangeText={value => handleChange('nombre', value)}
+          />
+          <TextInput
+            style={styles.inputText}
+            placeholder='Apellido'
+            value={fullName.apellido}
+            onChangeText={value => handleChange('apellido', value)}
+          />
+          <TextInput
+            style={styles.inputText}
+            placeholder='Edad'
+            value={fullName.edad}
+            keyboardType='numeric'
+            onChangeText={value => handleChange('edad', value)}
+          />
+        </View>
 
+        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          <Text style={styles.textButton}>{fullName.id ? 'Editar' : 'Guardar'}</Text>
+        </TouchableOpacity>
+
+        <FlatList
+          data={listNames}
+          renderItem={({ item }) => <Card data={item} />}
+          keyExtractor={item => item.id.toString()}
+          contentContainerStyle={styles.flatListContainer}
         />
       </View>
-
-      <TouchableOpacity style={styles.button} onPress={onSubmit}>
-        <Text style={styles.textButton}>
-          {
-            fullName.id ? 'Editar' : 'Guardar'
-          }
-        </Text>
-      </TouchableOpacity>
-
-      <FlatList
-        data={listNames}
-        renderItem={({ item }) => <Card data={item} />}
-      >
-      </FlatList>
-
-    </View>
-  )
+    </ImageBackground>
+  );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+  },
   container: {
-    display: 'flex',
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    flexDirection: 'column',
-    marginTop: StatusBar.currentHeight || 0,
   },
-  formContainer: {
-    justifyContent: 'center',
-    alignItems: 'center'
+  formContainer: { //datos de la persona
+    width: '80%',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 20,
+    borderRadius: 10,
+    marginBottom: 20,
+    marginTop: StatusBar.currentHeight + 20, // Ajusta el margen 
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    padding: 20
+    marginBottom: 20,
   },
-  inputText: {
-    width: 300,
-    backgroundColor: "white",
-    color: "gray",
+  inputText: { //cuadros de ingreso de datos
+    width: '100%',
+    backgroundColor: "#dcdcdc",
+    color: "black",
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 8,
     marginBottom: 10,
-    borderRadius: 15,
-    textAlign: 'center',
-    // fontSize: 10
+    borderRadius: 5,
   },
   button: {
-    width: 120,
-    height: 35,
-    backgroundColor: 'blue',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    width: '40%',
+    height: 40,
+    backgroundColor: '#007bff',
     borderRadius: 20,
-    marginBottom: 10,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: 20,
   },
   textButton: {
-    color: 'white',
-    // fontSize: 10,
-    textAlign: 'center'
+    color: '#fff',
+    fontSize: 16,
   },
-  containerItem: {
-    display: 'flex',
+  flatListContainer: {
+    width: '90%',
+    //height: '90%',
+    alignItems: 'center',
+    //height: 100,
+    overflow: 'hidden',
+  },
+  containerItem: { //etiquetas de cada persona, lita de personas en la db
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: 300,
+    width: '80%',
+    height: 60,
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 15,
     marginBottom: 10,
     borderRadius: 10,
     backgroundColor: 'white',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   itemFullName: {
     width: '70%',
-    //backgroundColor: 'red',
+    height: '100%',
+
+  },
+  letraTamaño: {
+    fontSize: 16,
   },
   itemActions: {
-    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    width: '30%'
-  }
-})
+    alignItems: 'center',
+    width: '35%',
+    height: 30,
+  },
+  icon: {
+    color: '#3498db',
+    width: '100%',
+    height: '100%',
+  },
+});

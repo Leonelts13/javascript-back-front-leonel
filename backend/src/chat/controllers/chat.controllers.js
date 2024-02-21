@@ -30,7 +30,7 @@ export const chat = async (req, res) => {
                     content: mensaje, // la entrada del usuario, lo que el usuario escribió en el chat
                 },
                 {
-                    role: 'assistant', // Cambiado de 'system' a 'assistant' para reflejar que es un chatbot o asistente virtual
+                    role: 'system', // Cambiado de 'system' a 'assistant' para reflejar que es un chatbot o asistente virtual
                     content: "¡Hola! Soy un chatbot aquí para ayudarte. ¿En qué puedo ayudarte hoy?", // Mensaje del chatbot
                     
                 }
@@ -114,6 +114,26 @@ export const tokenDesencriptado = async (req, res) => {
 };
 
 export const chatPDF = async (req, res) => {
+    res.setHeader("Content-Type", "applicaton/json")
+    if (!req.file) {
+        res.status(400).send({ message: 'No se ha proporcionado ningún archivo PDF.' });
+    }
+    if (!req.body.question) {
+        res.status(400).send({ message: 'No se ha proporcionado ninguna pregunta.' });
+    }
+    //console.log(`./src/uploads/${req.file?.filename}`)
+    const text = await procesarDoc(
+        //path: `./src/uploads/${req.file?.filename}`,
+        `${req.file?.filename}`,
+        req.body.question
+    )
+    console.log("Respuesta: ",text)
+    //res.json(text)
+    res.status(200).send({ message: text });
+
+};
+
+export const varios = async (req, res) => {
     res.setHeader("Content-Type", "applicaton/json")
     if (!req.file) {
         res.status(400).send({ message: 'No se ha proporcionado ningún archivo PDF.' });

@@ -1,6 +1,7 @@
 import { appChat } from "./chat/chat.app.js";
 import { appPersona } from "./persona/persona.app.js";
 import { createConnection } from "./utils/database.js";
+//import { appVarios } from "./varios.js";
 
 createConnection(); //creamos la conexion con la base de datos
 

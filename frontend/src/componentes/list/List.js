@@ -1,138 +1,168 @@
-import React, { useEffect, useState } from 'react'
-import { Alert, FlatList, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import Task from './Task'
-import { Modal } from 'react-native'
-import Profile from './Profile'
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Modal, Alert, FlatList } from "react-native";
+import Task from "./Task";
+import Profile from "./Profile";
+import axios from "axios";
 
-export default function List() {
-
-    const [taskItems, setTaskItems] = useState([])
-    const [showProfile, setShowProfile] = useState(false)
-    const [task, setTask] = useState({})
+const ListComponent = () => {
+    const [taskItems, setTaskItems] = useState([]);
+    const [showProfile, setShowProfile] = useState(false);
+    const [task, setTask] = useState();
 
     useEffect(() => {
-        fetchData()
-    }, [])
+        fetchData();
+    }, []);
 
     const fetchData = async () => {
         try {
-            const response = await fetch('https://api.unsplash.com/photos/?client_id=ZXjOAAdwefwfYGtyhjJmAerkWnGDxNNnEwTlnHkSqk4')
-            const jsonData = await response.json()
-            setTaskItems(jsonData)
-            // console.log(jsonData)
+            const response = await axios.get('https://api.unsplash.com/photos/', {
+                params: {
+                    client_id: 'tmXX2qlmRsZbsX7eXhvWsY1wfSpKeQj6fU9EQN0fkAw'
+                }
+            });
+            const jsonData = response.data;
+            setTaskItems(jsonData);
         } catch (error) {
-            console.error(error)
+            console.error('error', error);
         }
     }
 
+    const Item = ({ task }) => {
+        return (
+            <TouchableOpacity style={styles.perimetroItem} onPress={() => {
+                getProfile(task);
+            }}>
+                <Task task={task} />
+            </TouchableOpacity>
+        );
+    }
+
     const getProfile = (task) => {
-        setShowProfile(true)
-        setTask(task)
+        setShowProfile(true);
+        setTask(task);
     }
 
     const closeProfile = () => {
-        setShowProfile(!showProfile)
+        setShowProfile(false);
     }
 
-    const Item = ({ task, i }) => { // mandamos como parametro el task y el id
-        return (
-            <TouchableOpacity style={styles.peritem} key={i} onPress={() => getProfile(task)}>
-                <Task task={task} />
-            </TouchableOpacity>
-        )
-    }
-
-    return (taskItems &&
+    return (
         <View style={styles.container}>
-            <View style={styles.taskWrapper}>
-                <Text style={styles.sectionTitle}>
-                    Se listan los perfiles
-                </Text>
-                <View style={styles.items}>
-                    <FlatList
-                        data={taskItems}
-                        renderItem={({ item, i }) => <Item task={item} i={i} />}
-                    >
-                    </FlatList>
-                </View>
-            </View>
-            <Modal
-                animationType='slide'
-                transparent={true}
-                visible={showProfile}
-                onRequestClose={() => {
-                    Alert.alert("Modal has been closed")
-                    setShowProfile(!showProfile)
-                }}
-            >
-                <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                        <Text style={styles.modalText} />
-                        <Profile task={task} closeProfile={closeProfile} />
+            <ImageBackground source={require('../../../assets/fondo.jpg')} resizeMode="cover" style={styles.imagenFondo}>
+                {taskItems &&
+                    <View style={styles.contenedorTareas}>
+                        <Text style={styles.tituloSeccion}>Lista de Axios</Text>
+                        <FlatList
+                            data={taskItems}
+                            renderItem={({ item }) => <Item task={item} />}
+                            keyExtractor={(item, index) => index.toString()}
+                        />
                     </View>
+                }
+                <View style={{ flex: 1 }}>
+                    <Modal
+                        transparent={true}
+                        animationType={'slide'}
+                        visible={showProfile}
+                        onRequestClose={() => {
+                            Alert.alert('Modal ha sido cerrado');
+                            setShowProfile(false);
+                        }}
+                    >
+                        <View style={styles.ModalCentrado}>
+                            <View style={styles.ModalContenedor}>
+                                <Profile task={task} closeProfile={closeProfile} />
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
-            </Modal>
+            </ImageBackground>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
-    container: { // es el contenedor principal
-        backgroundColor: "#E8EAED",
-        //backgroundColor: "red",
-        marginTop: StatusBar.currentHeight || 0,
-        display: 'flex'
+    container: {
+        flex: 1,
     },
-    taskWrapper: { // es la pantalla invisible, toda la pantalla
-        paddingTop: 20,
+    imagenFondo: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+    },
+    contenedorTareas: {
+        paddingTop: 40,
         paddingHorizontal: 20,
-        height: 900,
-        //backgroundColor: "red",
+        paddingBottom: 50, // Ajuste para dejar espacio para el botón Cerrar y evitar superposiciones
+        alignItems: 'center',
     },
-    sectionTitle: { // titulo de la pantalla, esta centrada
+    tituloSeccion: {
         fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
-        //backgroundColor: "red",
+        color: 'white',
     },
-    items: {
-        // es la separacion de cada tarjeta
-        //backgroundColor: "red",
+    itemsContenedor: {
+        width: '100%',
+        alignItems: 'center',
     },
-    peritem: {
-        // es la separacion de cada tarjeta invisible??
-        //backgroundColor: "red",
+    perimetroItem: { //tarjeta de cada item
 
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        width: '100%',
+        height: 210,         // Cambia esto al tamaño deseado
+
+        //distancia de la tarjeta
+        marginVertical: 10,    // distanciaa entre tarjetas --> es el espacio externo
+        //paddingVertical: 10,   // distancia interna de la tarjeta
+        alignItems: 'center',
+
+        //borde de la tarjeta
+        borderRadius: 10,
+        borderColor: 'rgba(192, 192, 192, 0.8)',
+        borderWidth: 5,
+
+        //sombras
+        shadowColor: 'black',
+        shadowOpacity: 0.1,
+        shadowRadius: 60,
+        elevation: 5,
+        //superpusicion
+        overflow: 'hidden',
     },
-    centeredView: { // es toda la ventana flotante invisible
+
+    ModalCentrado: { //espacio invisible donde se mostrara el modal
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 22,
-        //backgroundColor: "red",
+        //marginTop: 45,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
-    modalView: { //es la ventana fotante
-        margin: 0,
-        backgroundColor: "white",
-        //backgroundColor: "red",
-        borderRadius: 20,
-        padding: 35,
+    ModalContenedor: {
+        justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: "#000",
-        width: "100%",
-        height: 300,
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
+        //padding: 5,
+        alignItems: 'center',
+        width: '60%',
+        height: '50%',
+        overflow: 'hidden',
+        borderRadius: 20,
+        borderColor: 'rgba(192, 192, 192, 0.8)',
+        borderWidth: 5,
+
     },
-    modalText: { // es el titulo (texto) de la ventana flotante
-        marginBottom: 15,
+    modalText: {
+        marginBottom: 1,
         textAlign: 'center',
-        width: "100%",
-        //backgroundColor: "red",
-    }
-})
+        width: '100%',
+        height: '100%', // Ajustamos la altura al 100% para ocupar todo el espacio disponible
+        color: 'black',
+        backgroundColor: 'blue',
+        borderColor: 'red',
+        borderWidth: 5,
+    },
+
+});
+
+export default ListComponent;

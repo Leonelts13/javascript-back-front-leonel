@@ -12,23 +12,30 @@ const Tab = createBottomTabNavigator();
 export default function Navigation() {
     return (
         <Tab.Navigator
-            initialRouteName="List" // el nombre de la primera ruta que se presenta en la pantalla
+            initialRouteName="Profile" // el nombre de la primera ruta que se presenta en la pantalla
             screenOptions={{ // Opciones predefinidas
                 headerShown: false, // para mostrar el encabezado
                 /*
-                TODO: Se pone estas lineas dentro del Tab.Screen para modificar los colores 
-                TODO: de todaslas opciones
+                //TODO: Se pone estas lineas dentro del Tab.Screen en options para modificar los colores 
+                //TODO: de todaslas opciones
                 tabBarInactiveTintColor: 'gray',
                 tabBarActiveTintColor: 'tomato',
                 */
+                tabBarHideOnKeyboard: true, //para que la barra de navegacion no se ponga encima del teclado al momento de ingresar datos
+
+
             }}
         >
-            <Tab.Screen name="List" component={List} options={{
-                tabBarLabel: "Listado",
-                tabBarIcon: ({ color, size }) => {
-                    return <MaterialCommunityIcons name="clipboard-list" color={color} size={size} />
-                }
-            }} />
+            <Tab.Screen name="List"
+                component={List}
+                options={{
+                    tabBarInactiveTintColor:'gray',
+                    tabBarActiveTintColor:'tomato',
+                    tabBarLabel: "Listado",
+                    tabBarIcon: ({ color, size }) => {
+                        return <MaterialCommunityIcons name="clipboard-list" color={color} size={size} />
+                    }
+                }} />
             <Tab.Screen name="Nombre" component={Form} options={{
                 tabBarLabel: "Nombre",
                 tabBarIcon: ({ color, size }) => {

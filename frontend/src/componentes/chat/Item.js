@@ -6,16 +6,22 @@ const Item = ({ item }) => {
   return (
     // Este bloque View es para los mensajes que envía el usuario
     <View key={id} style={styles.containerItem}>
-      <View style={styles.containerPrompt}>
-        <Text style={styles.text}>{prompt}</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+        <View style={styles.containerPrompt}>
+          <Text style={styles.text}>{prompt}</Text>
+        </View>
+        <Text style={[styles.avatar]}>{"🦉"}</Text>
       </View>
+
+
+
       {
         // TODO: Este bloque muestra los mensajes del chat
         !loading && (
           <View style={styles.containerAvatar}>
             {/* Mostramos el icono del chatbot */}
             <View>
-              <Text style={styles.avatar}>{"🤖"}</Text>
+              <Text style={styles.avatar}>{"🦉"}</Text>
             </View>
             <View style={styles.containerMessage}>
               {/* Mostramos el mensaje */}
@@ -39,19 +45,23 @@ export default Item;
 
 const styles = StyleSheet.create({
   containerItem: {
-    width: 380
+    width: 380,
+    //flexDirection: 'row',
+
+
   },
   containerPrompt: {
-    backgroundColor: 'orange',
+    backgroundColor: '#56b72d',
+
     maxWidth: '80%',
     borderRadius: 10,
     padding: 5,
     flexDirection: 'row',
     alignSelf: 'flex-end',
-    marginBottom: 10
+    marginBottom: 10,
   },
   containerAvatar: {
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   containerMessage: {
     flexDirection: 'row',
@@ -60,7 +70,7 @@ const styles = StyleSheet.create({
     padding: 5,
     maxWidth: '80%',
     alignSelf: 'flex-start',
-    marginBottom: 10
+    marginBottom: 10,
   },
   text: {
     color: 'white',
